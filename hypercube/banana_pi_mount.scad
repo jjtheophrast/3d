@@ -1,27 +1,35 @@
-// on hypercube evo the drillind are <--->240mm apart
-// the bed inner size is 273(measured) * 255(cutted length)
-
-// so the offset should be offset_ x= (273-240)/2 and offset_y=(255-240)/2
-
-$fn=120;
-
-distance_x =16.5;
-distance_y=7.5;
-length=40;
-thickness=8;
-
-drillingD =4.4;
-drilling_offset_r=7;
-
-extraction_height=1;
+dist_drilling_x=58;
+dist_drilling_y=23;
+hole_d = 2.5;  
+wall=1;
+bottom_thickness=2;
 
 
+module screw_hole(x,y, cutoutOnly=false){
+ $fn= 120;
+ height=8;
+ 
+  
+ 
+    translate([x,y,height/2]){
+ 
+ if(cutoutOnly) {
+ cylinder( h=height+0.01,d=hole_d, center=true) ;
+     }else{     
+        
+ difference(){   
+    cylinder( h=height,d=hole_d+2*wall, center=true) ;
+    cylinder( h=height+0.01,d=hole_d, center=true) ;
+ }
+ }
+ }
+}
 
-// bolts needed for 2020 alu profile
-//        --> 2*drilling_offset_r+6mm --> max 23 mm, min 19mm   => 5*20 bolt
-//        --> thickness + 6mm   --> max 14mm, min 10mm     => 5*12 mm
 
-//
+
+
+
+
 
 
 
@@ -72,59 +80,28 @@ module chamferCubeImpl(sizeX, sizeY, sizeZ, chamferHeight, chamferX, chamferY, c
     }
 }
 
+module cutout(x,y){
+    translate([2+x,2+y,-0.001])
+    chamferCube([2,dist_drilling_y-5,bottom_thickness+0.1],  
+            ch=0.5, chamfers =[[0, 0,0, 0], [0,0,0,0], [1, 1, 1, 1]] );
+}
 
 
 
 
 
-module bracket(mirrored=false){
-scale([mirrored?-1:1,1,1]){    
+
+screw_hole(0,0);
+screw_hole(dist_drilling_x,0);
+screw_hole(dist_drilling_x,dist_drilling_y);
+screw_hole(0,dist_drilling_y);
+
 difference(){
-union(){
-//cube([,thickness,20]);
-    
-chamferCube([length,thickness,20], ch=3, chamfers =[[0, 0,0, 0], [0,0,1,1], [0, 0, 0, 0]]);
-chamferCube([thickness,length-6,20], ch=3, chamfers =[[0, 1,1, 0], [0,0,0,0], [0, 0, 0, 0]]);
-
-//cube([distance_x+drilling_offset_r,distance_y,20]);
-cube([distance_x,distance_y+drilling_offset_r,20]);
-
-//translate([7,11,0])
-//rotate([0,0,45])
-//cube([7,8,20]);
-
-//cylinder(h=20,d=drillingD);
-
-translate([distance_x,distance_y,0]){
-  cylinder(h=20+extraction_height,r=drilling_offset_r, centered = true);
+translate([-hole_d/2-wall,-hole_d/2-wall,0]){
+chamferCube([dist_drilling_x+hole_d+2*wall,dist_drilling_y+hole_d+2*wall,bottom_thickness],  
+            ch=2.3, chamfers =[[0, 0,0, 0], [0,0,0,0], [1, 1, 1, 1]] );
+}
+for (i = [1: 10]){
+    cutout(i*5,0);
 }
 }
-
-
-union(){
-translate([distance_x,distance_y,0-0.001]){
-  cylinder(h=200+extraction_height*2,d=drillingD, centered = true);
-}
-rotate([0,0,45])
-cube([10,10,80], center=true);
-
-
-translate([-0.1,length-16,10])
-    rotate([0,90,0])
-        cylinder(h=1000,d=3.5, centered = true);
-    
-    
-    translate([length-8,500,10])
-    rotate([90, 0,0])
-        cylinder(h=1000,d=3.5, centered = true);
-    
-}
-}
-}
-}
-
-
-
-bracket(mirrored=false);
-translate([-10,0,0])
-bracket(mirrored=true);

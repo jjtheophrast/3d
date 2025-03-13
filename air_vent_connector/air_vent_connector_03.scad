@@ -452,12 +452,24 @@ module pipe_clamp() {
     //pipe_inner_diameter=50;
     //tolerance=0.5;
 
-    clamp_thickness = 5;
-    clamp_height = 10;
+    clamp_thickness = 3;
+    clamp_height = 20;
+    bottom_width=40;
+    bottom_thickness= clamp_thickness*2;
 
     color("green") {
         difference() {
+            union(){
             cylinder(h = clamp_height, d = pipe_diameter + 2 * clamp_thickness, center = true);
+            translate([0,pipe_diameter/2+clamp_thickness-1,0])
+                cube([bottom_width,bottom_thickness,clamp_height+0.01], center = true);
+                
+                }
+                
+                
+            translate([0,pipe_diameter/2-bottom_thickness+1,-clamp_height])
+                #cube([bottom_width-20,10,10*clamp_height], center = true);
+                
             cylinder(h = clamp_height + 0.01, d = pipe_diameter, center = true);
         }
 
@@ -598,7 +610,7 @@ translate([0, 0, 8])
     //gasket();
 
     translate(0, 0, -40) {
-        pipe_connector_50_150();
+//        pipe_connector_50_150();
     }
 
 

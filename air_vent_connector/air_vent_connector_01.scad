@@ -153,7 +153,7 @@ module shell_connections_cutout(inner_circle_diameter =10 ){
    translate([0,0,-insert_shell_connector_distance]){
     translate([0,0,shell_height/2-insert_shell_connector_height/2]){
      intersection(){  
-             #cube(  size= [pipe_diameter*2,insert_shell_connector_width+shell_connector_tolerance_x,
+             cube(  size= [pipe_diameter*2,insert_shell_connector_width+shell_connector_tolerance_x,
                 insert_shell_connector_height+shell_connector_tolerance_y],  center=true); 
     }}
  }
@@ -185,14 +185,15 @@ module gasket(){
 //***** complex items
 
 //the connector shell is extended on its botton
-module extended_shell(extension = 20){
+module extended_shell(extension = 20, filledExtension = false){
+    _cutoutD= filledExtension? ( pipe_inner_diameter+4) :(pipe_diameter+2*insert_wall_thickness+tolerance);
     color("green"){
     union(){
         shell();
         translate([0,0,-shell_height/2-extension/2]){
         difference(){    
             cylinder(h=extension, d=pipe_diameter+2*insert_wall_thickness+2*shell_wall_thickness+tolerance, center=true);
-            cylinder(h=extension+0.01, d=pipe_diameter+2*insert_wall_thickness+tolerance, center=true);
+            cylinder(h=extension+0.01, d=_cutoutD, center=true);
         }
       }
     }
@@ -208,15 +209,56 @@ module pipe_connector_50_50(){
 }
 
 
+module anemostate90degree(single=false){
+    anemostate_inner_d=125;
+    anemostate_height=100;
+    anemostate_wall_thickness=2;
+
+color("orange"){    
+difference(){    
+    union(){
+    xtranslation= anemostate_inner_d-38;
+    ytranslationForShell =( pipe_diameter+2*insert_wall_thickness+2*shell_wall_thickness+tolerance+1)/2;
+     translate([0,-xtranslation,ytranslationForShell])
+    rotate([90,0,0])
+    extended_shell(filledExtension=true,extension=anemostate_inner_d/3);
+    
+    difference(){
+         translate([0,0,anemostate_height/2])
+        cylinder(h=anemostate_height, d=anemostate_inner_d+ anemostate_wall_thickness*2, center=true);
+         translate([0,0,anemostate_height/2+anemostate_wall_thickness])
+        cylinder(h=anemostate_height, d=anemostate_inner_d, center=true);
+          translate([0,0,ytranslationForShell])
+        rotate([90,0,0])
+        cylinder(h=300, d=pipe_diameter+2*insert_wall_thickness+tolerance, center=true);
+    }
+    if(!single){
+    translate([0,xtranslation,ytranslationForShell])
+    rotate([-90,0,0])
+    extended_shell(filledExtension=true,extension=anemostate_inner_d/3);
+    }
+    }
+     translate([0,0,anemostate_height/2+shell_wall_thickness])
+        cylinder(h=anemostate_height, d=anemostate_inner_d, center=true);
+    
+}
+
+    
+}    
+}
+
+module anemostate90degreesingle(){
+}
+
 
 
 //animate from 50 to 12
 //translate([0,0,50])
-insert();
+//insert();
 //shell();
 
 //extended_shell();
 //pipe_connector_50_50();
 //gasket();
 
-    
+anemostate90degree(single=false);
