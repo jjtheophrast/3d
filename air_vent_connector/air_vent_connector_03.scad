@@ -446,6 +446,7 @@ module pipe_connector_50_150() {
 }
 
 
+// still not good
 module pipe_clamp() {
 
     //    pipe_diameter = 64.0;
@@ -479,6 +480,63 @@ module pipe_clamp() {
 }
 
 
+
+
+
+
+module anemostate90degree(single=false){
+    anemostate_inner_d=125;
+    anemostate_height=100;
+    anemostate_wall_thickness=2;
+
+    color("orange"){
+        difference(){
+            union(){
+                xtranslation= anemostate_inner_d-38;
+                ytranslationForShell =( pipe_diameter+2*insert_wall_thickness+2*shell_wall_thickness+tolerance+1)/2;
+                translate([0,-xtranslation,ytranslationForShell])
+                    rotate([90,0,0])
+                        extended_shell(filled=true,extension=anemostate_inner_d/3);
+
+                difference(){
+                    translate([0,0,anemostate_height/2])
+                        cylinder(h=anemostate_height, d=anemostate_inner_d+ anemostate_wall_thickness*2, center=true);
+                    translate([0,0,anemostate_height/2+anemostate_wall_thickness])
+                        cylinder(h=anemostate_height, d=anemostate_inner_d, center=true);
+                    translate([0,0,ytranslationForShell])
+                        rotate([90,0,0])
+                            cylinder(h=300, d=pipe_diameter+2*insert_wall_thickness+tolerance, center=true);
+                }
+                if(!single){
+                    translate([0,xtranslation,ytranslationForShell])
+                        rotate([-90,0,0])
+                            extended_shell(filled=true,extension=anemostate_inner_d/3);
+                }
+            }
+            translate([0,0,anemostate_height/2+shell_wall_thickness])
+                cylinder(h=anemostate_height, d=anemostate_inner_d, center=true);
+
+        }
+
+
+    }
+}
+
+module anemostate90degreesingle(){
+}
+
+
+
+//animate from 50 to 12
+//translate([0,0,50])
+//insert();
+//shell();
+
+//extended_shell();
+//pipe_connector_50_50();
+//gasket();
+
+anemostate90degree(single=false);
 
 
 
@@ -615,6 +673,5 @@ translate([0, 0, 8])
 
 
 
-pipe_clamp();
-
+anemostate90degree(single = false);
     
