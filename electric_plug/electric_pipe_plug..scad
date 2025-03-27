@@ -10,7 +10,7 @@ wall_thickness = 2;
 module pipe_plug(pipe_inner_diam, pipe_outer_diameter) {
     
     plug_length = 20;  
-    
+
     flange_thickness = 3;  
     
     difference() {

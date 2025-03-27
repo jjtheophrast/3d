@@ -485,33 +485,69 @@ module pipe_clamp() {
 
 
 module anemostate90degree(single=false){
-    anemostate_inner_d=125;
-    anemostate_height=100;
+    anemostate_inner_d=100;
+    anemostate_height=220;
     anemostate_wall_thickness=2;
+    leg_height=10;
 
     color("orange"){
         difference(){
             union(){
-                xtranslation= anemostate_inner_d-38;
-                ytranslationForShell =( pipe_diameter+2*insert_wall_thickness+2*shell_wall_thickness+tolerance+1)/2;
+                xtranslation= anemostate_inner_d-30;
+                ytranslationForShell =( pipe_diameter+2*insert_wall_thickness+2*shell_wall_thickness+tolerance+1)/2 +3;
                 translate([0,-xtranslation,ytranslationForShell])
                     rotate([90,0,0])
                         extended_shell(filled=true,extension=anemostate_inner_d/3);
 
                 difference(){
-                    translate([0,0,anemostate_height/2])
-                        cylinder(h=anemostate_height, d=anemostate_inner_d+ anemostate_wall_thickness*2, center=true);
-                    translate([0,0,anemostate_height/2+anemostate_wall_thickness])
+                    union(){
+                    translate([0,0,anemostate_height/2]){
+                       cylinder(h=anemostate_height, d=anemostate_inner_d+ anemostate_wall_thickness*2, center=true);
+                    }
+                    rotate([0,0,60]){
+                    translate([0,0,leg_height/2]){
+                    difference(){    
+                    cube([3*leg_height, anemostate_inner_d+50,leg_height], center=true);
+                    translate([0,(anemostate_inner_d+25)/2,-3*leg_height]){
+                        cylinder(h=100,r=4.5 );
+                    }
+                    translate([0,-(anemostate_inner_d+25)/2,-3*leg_height]){
+                        cylinder(h=100,r=4.5 );
+                    }
+                        }
+                }
+                }
+                
+                
+                           rotate([0,0,-60]){
+                    translate([0,0,leg_height/2]){
+                    difference(){    
+                    cube([3*leg_height, anemostate_inner_d+50,leg_height], center=true);
+                    translate([0,(anemostate_inner_d+25)/2,-3*leg_height]){
+                        cylinder(h=100,r=4.5 );
+                    }
+                    translate([0,-(anemostate_inner_d+25)/2,-3*leg_height]){
+                        cylinder(h=100,r=4.5 );
+                    }
+                        }
+                }
+                }
+                
+                
+                }
+                    
+                        translate([0,0,anemostate_height/2+anemostate_wall_thickness])
                         cylinder(h=anemostate_height, d=anemostate_inner_d, center=true);
-                    translate([0,0,ytranslationForShell])
+                    translate([0,-40,ytranslationForShell])
                         rotate([90,0,0])
-                            cylinder(h=300, d=pipe_diameter+2*insert_wall_thickness+tolerance, center=true);
+                            cylinder(h=50, d=pipe_diameter+2*insert_wall_thickness+tolerance, center=true);
                 }
                 if(!single){
                     translate([0,xtranslation,ytranslationForShell])
                         rotate([-90,0,0])
                             extended_shell(filled=true,extension=anemostate_inner_d/3);
                 }
+                
             }
             translate([0,0,anemostate_height/2+shell_wall_thickness])
                 cylinder(h=anemostate_height, d=anemostate_inner_d, center=true);
@@ -536,7 +572,7 @@ module anemostate90degreesingle(){
 //pipe_connector_50_50();
 //gasket();
 
-anemostate90degree(single=false);
+
 
 
 
@@ -673,5 +709,5 @@ translate([0, 0, 8])
 
 
 
-anemostate90degree(single = false);
+anemostate90degree(single = true);
     
